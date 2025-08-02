@@ -1,50 +1,101 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SûrLink – Anti-Phishing Scanner</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🛡️ SûrLink- Anti-Phishing App</title>
   <link rel="stylesheet" href="style.css" />
-  <link rel="icon" href="favicon.png" />
 </head>
 <body>
+  <div class="app-container">
 
-  <div class="app-container glass">
     <!-- Sidebar -->
     <aside class="sidebar glass">
-      <div class="logo">🛡️ <strong>SûrLink</strong></div>
-      <p class="tagline">Built to Detect,<br>Designed to Protect.</p>
+	<div class="sidebar-scroll">
+  <h2>🛡️ SûrLink</h2>
+  <p class="tagline">Built to Detect, Designed to Protect.</p>	
+  <nav>
+    <button onclick="toggleSection('historySection')">📁 Scan History</button>
+    <button onclick="toggleSection('statsSection')">📊 Stats Dashboard</button>
+    <button onclick="toggleSection('quizSection')">🧠 Training Quiz</button>
+    <button onclick="toggleSection('urlSection')">🔗 URL Checker</button>
+    <button onclick="toggleSection('feedbackSection')">💬 Feedback</button>
+  </nav>
 
-      <hr class="divider" />
+  <!-- Scan History Section -->
+  <div id="historySection" class="sidebar-section hidden">
+    <h4>Scan History</h4>
+    <ul id="historyList"></ul>
+  </div>
 
-      <section>
-        <h4>🔁 Scan History</h4>
-        <ul id="historyList" class="history-list"></ul>
-      </section>
+  <!-- Stats Section -->
+  <div id="statsSection" class="sidebar-section hidden">
+    <h4>Scan Statistics</h4>
+    <ul class="stats">
+      <li>Total Scans: <span id="totalScans">0</span></li>
+      <li>Phishing Detected: <span id="phishingScans">0</span></li>
+      <li>Safe Messages: <span id="safeScans">0</span></li>
+    </ul>
+  </div>
 
-      <hr class="divider" />
+  <!-- Quiz Section -->
+  <div id="quizSection" class="sidebar-section hidden">
+    <h4>Phishing Awareness Quiz</h4>
+    <div id="quizBox">
+      <p id="quizQuestion">Click "Start Quiz" to begin!</p>
+      <div id="quizOptions"></div>
+      <button onclick="startQuiz()">Start Quiz</button>
+    </div>
+  </div>
 
-      <section>
-        <h4>⚙️ Preferences</h4>
-        <label class="toggle-container">
-          <input type="checkbox" id="themeToggle" />
-          <span class="toggle-slider"></span>
-          <span class="toggle-label">Dark Mode</span>
-        </label>
-      </section>
-    </aside>
+  <!-- URL Checker Section -->
+  <div id="urlSection" class="sidebar-section hidden">
+    <h4>Check a URL</h4>
+    <input type="text" id="urlInput" placeholder="Enter a URL...">
+    <button onclick="checkURL()">Check Now</button>
+    <div id="urlFeedback"></div>
+  </div>
 
-    <!-- Main Chat Interface -->
-    <main class="main-window">
+  <!-- Smart Feedback Section -->
+  <div id="feedbackSection" class="sidebar-section hidden">
+    <h4>Submit Feedback</h4>
+    <select id="feedbackType">
+      <option value="suggestion">Suggestion</option>
+      <option value="bug">Bug Report</option>
+      <option value="question">Question</option>
+    </select>
+    <textarea id="feedbackInput" class="hidden" placeholder="Enter your message here..."></textarea>
+    <button onclick="toggleFeedbackInput()">Write Feedback</button>
+    <button onclick="submitFeedback()" class="hidden" id="submitFeedbackBtn">Submit</button>
+  </div>
+  <!-- Theme Mode Toggle -->
+<hr>
+<div class="theme-toggle">
+  <label for="themeSwitch">🌗 Toggle Theme</label>
+  <input type="checkbox" id="themeSwitch" onchange="toggleTheme()" />
+</div>
+</aside>
+
+
+    <!-- Main Content -->
+    <main class="main-content">
       <div class="chat-window" id="chatWindow">
-        <div class="chat-message system">Welcome to <strong>SûrLink</strong>. Paste a message, email, or link to scan for phishing risks.</div>
+        <!-- Chat messages appear here -->
       </div>
 
-      <!-- Input Bar -->
-      <div class="input-section glass">
-        <textarea id="messageInput" placeholder="Type or paste here..."></textarea>
-        <button class="send-button" onclick="triggerScan()">▶</button>
+      <!-- Scan Progress Bar -->
+      <div id="scanProgressBar" class="progress-bar hidden"></div>
+
+      <!-- Input + Tooltip -->
+      <div class="input-area">
+        <textarea id="messageInput" placeholder="Paste or type a message here..."></textarea>
+        <div class="tooltip-wrapper">
+          <button id="scanBtn">Scan</button>
+          <span class="tooltip" id="aiTooltip">AI will explain this message once scanned.</span>
+        </div>
       </div>
+	  
     </main>
   </div>
 
