@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SûrLink – Anti-Phishing Scanner</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" href="favicon.png" />
+</head>
+<body>
+
+  <div class="app-container glass">
+    <!-- Sidebar -->
+    <aside class="sidebar glass">
+      <div class="logo">🛡️ <strong>SûrLink</strong></div>
+      <p class="tagline">Built to Detect,<br>Designed to Protect.</p>
+
+      <hr class="divider" />
+
+      <section>
+        <h4>🔁 Scan History</h4>
+        <ul id="historyList" class="history-list"></ul>
+      </section>
+
+      <hr class="divider" />
+
+      <section>
+        <h4>⚙️ Preferences</h4>
+        <label class="toggle-container">
+          <input type="checkbox" id="themeToggle" />
+          <span class="toggle-slider"></span>
+          <span class="toggle-label">Dark Mode</span>
+        </label>
+      </section>
+    </aside>
+
+    <!-- Main Chat Interface -->
+    <main class="main-window">
+      <div class="chat-window" id="chatWindow">
+        <div class="chat-message system">Welcome to <strong>SûrLink</strong>. Paste a message, email, or link to scan for phishing risks.</div>
+      </div>
+
+      <!-- Input Bar -->
+      <div class="input-section glass">
+        <textarea id="messageInput" placeholder="Type or paste here..."></textarea>
+        <button class="send-button" onclick="triggerScan()">▶</button>
+      </div>
+    </main>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
