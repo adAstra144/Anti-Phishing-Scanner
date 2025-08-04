@@ -5,15 +5,31 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>🛡️ SûrLink- Anti-Phishing App</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <!-- Tutorial -->
+   <div id="introOverlay" class="overlay">
+  <div class="overlay-box">
+    <h2>👋 Welcome to SûrLink</h2>
+    <p>Are you new here?</p>
+    <div class="overlay-buttons">
+      <button onclick="beginTutorial()">Yes, show me around</button>
+      <button onclick="closeOverlay()">No, I'm familiar</button>
+    </div>
+  </div>
+</div>
+
   <div class="app-container">
 
     <!-- Sidebar -->
     <aside class="sidebar glass">
 	<div class="sidebar-scroll">
-  <h2>🛡️ SûrLink</h2>
+ <div class="brand-header">
+  <img src="phishinglogo.png" alt="SûrLink Logo" class="brand-logo">
+   <span class="brand-title">SûrLink</span>
+</div>
+
   <p class="tagline">Built to Detect, Designed to Protect.</p>	
   <nav>
     <button onclick="toggleSection('historySection')">📁 Scan History</button>
@@ -98,6 +114,28 @@
 	  
     </main>
   </div>
+
+<!-- Tutorial Popup -->
+<div id="tutorialPopup" class="tutorial-popup hidden">
+  <div class="tutorial-content">
+    <h3>Welcome to SûrLink!</h3>
+    <p>Are you new here?</p>
+    <button onclick="startTutorial()">Yes, show me around</button>
+    <button onclick="skipTutorial()">No, skip</button>
+  </div>
+</div>
+
+<!-- Overlay Highlight + Step -->
+<div id="tutorialOverlay" class="hidden">
+  <div id="highlightBox"></div>
+  <div id="tutorialStepBox">
+  <p id="tutorialText"></p>
+  <div class="button-container">
+    <button onclick="nextTutorialStep()">Next</button>
+  </div>
+</div>
+
+
 
   <script src="script.js"></script>
 </body>
