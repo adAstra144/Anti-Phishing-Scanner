@@ -466,6 +466,12 @@ body.light-mode #urlFeedback {
   color: #000;
 }
 
+body.light-mode .tagline {
+  color: #444;
+  font-weight: 500;
+  font-family: 'Segoe UI', sans-serif;
+}
+
 /* Theme Toggle UI */
 .theme-toggle {
   display: flex;
