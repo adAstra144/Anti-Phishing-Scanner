@@ -91,7 +91,7 @@ async function scanMessage() {
   animateProgressBar();
 
   try {
-    const res = await fetch("http://localhost:5000/analyze", {
+    const res = await fetch("http://192.168.1.7:5000/analyze", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -150,35 +150,59 @@ const quizData = [
     answer: "Grammatical errors and suspicious links"
   },
   {
-    question: "What should you do if a message asks for your password?",
+    question: "Which website is most likely fake?",
     options: [
-      "Reply immediately with your password",
-      "Verify the source before responding",
-      "Ignore all emails from your company",
-      "Click the link and change your password"
+      "https://secure-paypal.com.login.verify",
+      "https://paypal.com/settings",
+      "https://accounts.google.com",
+      "https://github.com/login"
     ],
-    answer: "Verify the source before responding"
+    answer: "https://secure-paypal.com.login.verify"
   },
   {
-    question: "What is a phishing attack?",
+    question: "What should you do before clicking on a suspicious link?",
     options: [
-      "A fishing technique used in rivers",
-      "A way to steal personal information via fake messages",
-      "A password recovery method",
-      "An antivirus scanning process"
+      "Check the URL carefully",
+      "Click quickly before it disappears",
+      "Open it in incognito mode",
+      "Forward to a friend"
     ],
-    answer: "A way to steal personal information via fake messages"
-  }
+    answer: "Check the URL carefully"
+  },
+  // Add more as needed...
 ];
 
 let currentQuestion = 0;
+let score = 0;  // <-- NEW: holds current score
 
 function startQuiz() {
   currentQuestion = 0;
+  score = 0; // <-- reset score
   loadQuestion();
 }
 
+
+let quizTimer;
+let timeLimit = 15; // seconds
+
+function startTimer() {
+  let timeLeft = timeLimit;
+  const quizQuestion = document.getElementById("quizQuestion");
+  quizQuestion.innerText += ` (${timeLeft}s)`;
+
+  quizTimer = setInterval(() => {
+    timeLeft--;
+    if (timeLeft <= 0) {
+      clearInterval(quizTimer);
+      checkAnswer(null); // auto fail
+    } else {
+      quizQuestion.innerText = quizData[currentQuestion].question + ` (${timeLeft}s)`;
+    }
+  }, 1000);
+}
+
 function loadQuestion() {
+  clearInterval(quizTimer); // Clear any previous
   const question = quizData[currentQuestion];
   const quizQuestion = document.getElementById("quizQuestion");
   const quizOptions = document.getElementById("quizOptions");
@@ -189,9 +213,14 @@ function loadQuestion() {
   question.options.forEach((option) => {
     const btn = document.createElement("button");
     btn.innerText = option;
-    btn.onclick = () => checkAnswer(option);
+    btn.onclick = () => {
+      clearInterval(quizTimer);
+      checkAnswer(option);
+    };
     quizOptions.appendChild(btn);
   });
+
+  startTimer();
 }
 
 function checkAnswer(selected) {
@@ -200,21 +229,45 @@ function checkAnswer(selected) {
   const quizOptions = document.getElementById("quizOptions");
 
   if (selected === correct) {
-    quizQuestion.innerText = "✅ Correct!";
+  quizQuestion.innerText = "✅ Correct!";
+  score++; // <-- NEW: increment on correct
+  } else if (selected === null) {
+    quizQuestion.innerText = `⏰ Time's up! Correct answer: ${correct}`;
   } else {
-    quizQuestion.innerText = `❌ Incorrect. The correct answer is: ${correct}`;
-  }
+    quizQuestion.innerText = `❌ Incorrect. Correct answer: ${correct}`;
+  }  
+
 
   setTimeout(() => {
     currentQuestion++;
     if (currentQuestion < quizData.length) {
       loadQuestion();
     } else {
-      quizQuestion.innerText = "🎉 Quiz completed!";
-      quizOptions.innerHTML = `<button onclick="startQuiz()">Try Again</button>`;
+  quizQuestion.innerText = `🎉 Quiz completed! You scored ${score}/${quizData.length}`;
+  quizOptions.innerHTML = `<button onclick="startQuiz()">Try Again</button>`;
     }
   }, 2000);
 }
+
+const ping = new Audio("assets/ping.mp3");
+const correct = new Audio("assets/correct.mp3");
+
+function playSound(type) {
+  if (type === "scan") ping.play();
+  if (type === "correct") correct.play();
+}
+
+let feedback = "";
+if (score === quizData.length) {
+  feedback = "🏆 Perfect!";
+} else if (score >= quizData.length * 0.7) {
+  feedback = "👏 Great job!";
+} else {
+  feedback = "💡 Keep practicing!";
+}
+quizQuestion.innerText = `🎉 Quiz completed! You scored ${score}/${quizData.length}. ${feedback}`;
+
+
 // === URL Checker ===
 
 function isValidURL(url) {
@@ -302,3 +355,135 @@ window.addEventListener("DOMContentLoaded", () => {
 // Attach scan button
 scanBtn.addEventListener("click", scanMessage);
 
+
+
+
+// === Smooth Scroll for Mouse Wheel ===
+let scrollTarget = chatWindow.scrollTop;
+let isScrolling = false;
+
+chatWindow.addEventListener("wheel", (e) => {
+  e.preventDefault(); // Stop the default instant scroll
+  scrollTarget += e.deltaY;
+  scrollTarget = Math.max(0, Math.min(scrollTarget, chatWindow.scrollHeight - chatWindow.clientHeight));
+
+  if (!isScrolling) smoothScrollChat();
+}, { passive: false });
+
+function smoothScrollChat() {
+  isScrolling = true;
+  const distance = scrollTarget - chatWindow.scrollTop;
+  const step = distance * 0.2;
+  chatWindow.scrollTop += step;
+
+  if (Math.abs(step) > 0.5) {
+    requestAnimationFrame(smoothScrollChat);
+  } else {
+    isScrolling = false;
+  }
+}
+
+/* Tutorial */
+function beginTutorial() {
+  document.getElementById("introOverlay").style.display = "none";
+  startTutorial(); // Call the actual tutorial logic
+}
+
+
+function closeOverlay() {
+  document.getElementById("introOverlay").style.display = "none";
+}
+
+// Show overlay only once per user (optional)
+window.addEventListener("DOMContentLoaded", () => {
+  const visited = localStorage.getItem("visitedBefore");
+  if (!visited) {
+    document.getElementById("introOverlay").style.display = "flex";
+    localStorage.setItem("visitedBefore", true);
+  }
+});
+
+
+const tutorialPopup = document.getElementById("tutorialPopup");
+const tutorialOverlay = document.getElementById("tutorialOverlay");
+const tutorialText = document.getElementById("tutorialText");
+const highlightBox = document.getElementById("highlightBox");
+const stepBox = document.getElementById("tutorialStepBox");
+
+let tutorialSteps = [
+  { selector: ".sidebar button:nth-child(1)", text: "📁 Scan History shows your past scans." },
+  { selector: ".sidebar button:nth-child(2)", text: "📊 Stats Dashboard tracks your activity." },
+  { selector: ".sidebar button:nth-child(3)", text: "🧠 Training Quiz helps you learn anti-phishing." },
+  { selector: ".sidebar button:nth-child(4)", text: "🔗 URL Checker lets you check suspicious links." },
+  { selector: ".sidebar button:nth-child(5)", text: "💬 Feedback lets you send your thoughts." },
+  { selector: ".input-area", text: "This is where you type your message and scan it!" }
+];
+
+let currentStep = 0;
+
+function startTutorial() {
+  tutorialPopup.classList.add("hidden");
+  tutorialOverlay.classList.remove("hidden");
+  showStep(currentStep);
+}
+
+function skipTutorial() {
+  tutorialPopup.classList.add("hidden");
+  localStorage.setItem("tutorialSeen", "true");
+}
+
+function showStep(index) {
+  const step = tutorialSteps[index];
+  const target = document.querySelector(step.selector);
+  if (!target) return;
+
+  const rect = target.getBoundingClientRect();
+  const viewportHeight = window.innerHeight;
+
+  highlightBox.style.top = rect.top + "px";
+  highlightBox.style.left = rect.left + "px";
+  highlightBox.style.width = rect.width + "px";
+  highlightBox.style.height = rect.height + "px";
+
+  tutorialText.innerText = step.text;
+
+  // Position message box intelligently
+  const stepBoxHeight = 80; // estimated height of the tutorial message box
+  const spaceBelow = viewportHeight - rect.bottom;
+  const spaceAbove = rect.top;
+
+  if (spaceBelow < stepBoxHeight && spaceAbove > stepBoxHeight) {
+    // Not enough space below — place above
+    stepBox.style.top = (rect.top - stepBoxHeight - 10) + "px";
+  } else {
+    // Default: place below
+    stepBox.style.top = (rect.bottom + 10) + "px";
+  }
+
+  stepBox.style.left = rect.left + "px";
+}
+
+
+function nextTutorialStep() {
+  currentStep++;
+  if (currentStep < tutorialSteps.length) {
+    showStep(currentStep);
+  } else {
+    tutorialOverlay.classList.add("hidden");
+    localStorage.setItem("tutorialSeen", "true");
+  }
+}
+
+// Show popup only on first visit
+window.addEventListener("DOMContentLoaded", () => {
+  if (!localStorage.getItem("tutorialSeen")) {
+    tutorialPopup.classList.remove("hidden");
+  }
+});
+
+messageInput.addEventListener("keydown", (e) => {
+  if ((e.ctrlKey && e.key === "Enter") || e.key === "Enter") {
+    e.preventDefault();
+    scanMessage();
+  }
+});
