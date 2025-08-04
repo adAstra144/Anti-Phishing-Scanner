@@ -16,12 +16,11 @@ def analyze():
         return jsonify({"error": "Missing message"}), 400
 
     message = data["message"]
-    label, confidence, reasoning = predict_phishing(message)
+    label, confidence = predict_phishing(message)
 
     return jsonify({
         "result": label,
-        "confidence": f"{confidence}%",
-        "reasoning": reasoning
+        "confidence": f"{confidence}%"
     })
 
 if __name__ == "__main__":

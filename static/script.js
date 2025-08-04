@@ -103,7 +103,10 @@ async function scanMessage() {
     removeTypingIndicator();
     progressBar.classList.add("hidden");
 
-    appendMessage(data.result, "ai");
+    appendMessage(`
+  <strong>🔎 Result:</strong> ${data.result}<br>
+  <strong>📊 Confidence:</strong> ${data.confidence}<br>
+`, "ai");
     saveToHistory(message, data.result);
     updateStats(data.result);
   } catch (error) {
@@ -173,14 +176,17 @@ const quizData = [
 ];
 
 let currentQuestion = 0;
+let score = 0;  // <-- NEW: holds current score
 
 function startQuiz() {
   currentQuestion = 0;
+  score = 0; // <-- reset score
   loadQuestion();
 }
 
+
 let quizTimer;
-let timeLimit = 10; // seconds
+let timeLimit = 15; // seconds
 
 function startTimer() {
   let timeLeft = timeLimit;
@@ -226,23 +232,45 @@ function checkAnswer(selected) {
   const quizOptions = document.getElementById("quizOptions");
 
   if (selected === correct) {
-    quizQuestion.innerText = "✅ Correct!";
+  quizQuestion.innerText = "✅ Correct!";
+  score++; // <-- NEW: increment on correct
   } else if (selected === null) {
     quizQuestion.innerText = `⏰ Time's up! Correct answer: ${correct}`;
   } else {
     quizQuestion.innerText = `❌ Incorrect. Correct answer: ${correct}`;
-  }
+  }  
+
 
   setTimeout(() => {
     currentQuestion++;
     if (currentQuestion < quizData.length) {
       loadQuestion();
     } else {
-      quizQuestion.innerText = "🎉 Quiz completed!";
-      quizOptions.innerHTML = `<button onclick="startQuiz()">Try Again</button>`;
+  quizQuestion.innerText = `🎉 Quiz completed! You scored ${score}/${quizData.length}`;
+  quizOptions.innerHTML = `<button onclick="startQuiz()">Try Again</button>`;
     }
   }, 2000);
 }
+
+const ping = new Audio("assets/ping.mp3");
+const correct = new Audio("assets/correct.mp3");
+
+function playSound(type) {
+  if (type === "scan") ping.play();
+  if (type === "correct") correct.play();
+}
+
+let feedback = "";
+if (score === quizData.length) {
+  feedback = "🏆 Perfect!";
+} else if (score >= quizData.length * 0.7) {
+  feedback = "👏 Great job!";
+} else {
+  feedback = "💡 Keep practicing!";
+}
+quizQuestion.innerText = `🎉 Quiz completed! You scored ${score}/${quizData.length}. ${feedback}`;
+
+
 // === URL Checker ===
 
 function isValidURL(url) {
@@ -453,5 +481,12 @@ function nextTutorialStep() {
 window.addEventListener("DOMContentLoaded", () => {
   if (!localStorage.getItem("tutorialSeen")) {
     tutorialPopup.classList.remove("hidden");
+  }
+});
+
+messageInput.addEventListener("keydown", (e) => {
+  if ((e.ctrlKey && e.key === "Enter") || e.key === "Enter") {
+    e.preventDefault();
+    scanMessage();
   }
 });

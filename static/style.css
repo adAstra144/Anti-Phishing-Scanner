@@ -743,3 +743,31 @@ body {
   background: #aad8ff;
   color: #1f1c2c;
 }
+
+.brand-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 15px;
+  margin-bottom: 20px;
+}
+
+.brand-logo {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  border-radius: 6px;
+}
+
+.brand-title {
+  font-size: 22px;
+  font-weight: bold;
+  color: #aad8ff;
+  font-family: 'Segoe UI', sans-serif;
+  line-height: 1;
+  margin-top: 2px; /* adjust slightly if needed */
+}
+
+body:not(.light-mode) .brand-logo {
+  filter: brightness(1.2) contrast(1.2);
+}

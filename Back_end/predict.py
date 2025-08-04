@@ -19,19 +19,6 @@ def predict_phishing(text):
 
     label = "Phishing" if predicted_class.item() == 1 else "Safe"
     confidence_value = confidence.item()
-
-    if label == "Phishing":
-        reasoning = (
-            "Highly likely phishing" if confidence_value >= 0.95 else
-            "Possibly phishing" if confidence_value >= 0.7 else
-            "Suspicious, but uncertain"
-        )
-    else:
-        reasoning = (
-            "Very likely safe" if confidence_value >= 0.95 else
-            "Probably safe" if confidence_value >= 0.7 else
-            "Unclear, but not phishing"
-        )
-
     confidence_percent = round(confidence_value * 100, 1)
-    return label, confidence_percent, reasoning
+
+    return label, confidence_percent
