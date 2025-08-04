@@ -1,6 +1,17 @@
+
+
+
+
+html {
+  scroll-behavior: smooth;
+}
+
+
 * {
   box-sizing: border-box;
   transition: all 0.3s ease;
+  margin: 0;
+  padding: 0;
 }
 
 body {
@@ -16,10 +27,12 @@ body {
 
 .app-container {
   display: flex;
-  height: 90vh;
-  width: 95vw;
-  max-width: 1200px;
-  border-radius: 15px;
+  flex-direction: row;
+  flex-wrap: wrap;
+  min-height: 100vh;
+  width: 100vw;
+  max-width: none;
+  border-radius: 0;
   overflow: hidden;
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(10px);
@@ -27,14 +40,12 @@ body {
 }
 
 .sidebar {
-  width: 250px;
-  padding: 20px;
-  background: rgba(20, 20, 40, 0.25);
-  backdrop-filter: blur(12px);
-  border-right: 1px solid rgba(255, 255, 255, 0.05);
+  width: 280px;
+  height: 100vh;
+  background: rgba(255, 255, 255, 0.05);
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  gap: 15px;
 }
 
 .sidebar h2 {
@@ -43,13 +54,21 @@ body {
   color: #aad8ff;
 }
 
-.sidebar button {
-  padding: 10px;
+ .sidebar button {
+  display: block;
+  width: 100%;
+  max-width: 240px; /* <-- Keeps it from being too wide */
+  padding: 10px 12px;
+  margin: 0 auto 10px auto; /* Center the buttons horizontally */
   background: transparent;
   border: 1px solid #aad8ff;
   border-radius: 8px;
   color: #aad8ff;
   cursor: pointer;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .sidebar button:hover {
@@ -58,12 +77,13 @@ body {
 }
 
 .main-content {
-  flex-grow: 1;
+  flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   padding: 20px;
   overflow: hidden;
+  height: 100vh; /* already present, leave it */
 }
 
 .chat-window {
@@ -73,7 +93,6 @@ body {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  scroll-behavior: smooth;
 }
 
 .message-bubble {
@@ -112,7 +131,14 @@ body {
 .input-area {
   display: flex;
   gap: 10px;
-  margin-top: 15px;
+  padding: 15px;
+  position: sticky;
+  bottom: 0;
+  background: inherit;
+  z-index: 100;
+  max-width: 800px;       /* Limit overall width */
+  margin: 0 auto;         /* Center it */
+  width: 100%;
 }
 
 textarea {
@@ -126,6 +152,7 @@ textarea {
   min-height: 50px;
   max-height: 200px;
   overflow-y: auto;
+  max-width: 600px;      /* Limit the text area width */
 }
 
 button#scanBtn {
@@ -138,12 +165,16 @@ button#scanBtn {
   cursor: pointer;
 }
 
-@keyframes fadeIn {
-  from {
+@keyframes fadeInUpSmooth {
+  0% {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(20px);
   }
-  to {
+  60% {
+    opacity: 0.6;
+    transform: translateY(4px);
+  }
+  100% {
     opacity: 1;
     transform: translateY(0);
   }
@@ -272,13 +303,19 @@ button#scanBtn {
 }
 
 #quizOptions button {
-  padding: 8px 12px;
+  padding: 10px 12px;
   background: rgba(255, 255, 255, 0.08);
   color: white;
   border: none;
   border-radius: 6px;
   cursor: pointer;
   transition: background 0.2s;
+  white-space: normal;     /* Allow multiple lines */
+  overflow: visible;       /* Let text show */
+  text-overflow: unset;    /* No cutting */
+  width: 100%;             /* Optional: make buttons full width */
+  text-align: left;        /* Optional: better readability */
+  word-wrap: break-word;   /* Break long words if needed */
 }
 
 #quizOptions button:hover {
@@ -402,25 +439,37 @@ body.light-mode .glass-box,
 body.light-mode .sidebar,
 body.light-mode .result-box,
 body.light-mode .sidebar-section {
-  background: var(--box-light);
+  background: rgba(255, 255, 255, 0.75); /* brighter glass effect */
   color: var(--text-light);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08); /* subtle depth */
+  backdrop-filter: blur(10px);
 }
 
 body.light-mode textarea,
 body.light-mode input,
 body.light-mode select {
-  background: #fff;
-  color: #000;
+  background: #ffffff;
+  color: #111111;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
 body.light-mode button {
   background-color: var(--primary-color);
   color: #fff;
+  border: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 body.light-mode #urlFeedback {
-  background: rgba(0, 0, 0, 0.06);
+  background: rgba(0, 0, 0, 0.05);
   color: #000;
+}
+
+body.light-mode .tagline {
+  color: #444;
+  font-weight: 500;
+  font-family: 'Segoe UI', sans-serif;
 }
 
 /* Theme Toggle UI */
@@ -442,18 +491,7 @@ body.light-mode #urlFeedback {
 .message,
 .result-box,
 .sidebar-section {
-  animation: fadeInUp 0.4s ease;
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  animation: fadeInUpSmooth 0.4s ease;
 }
 
 .sidebar {
@@ -464,10 +502,9 @@ body.light-mode #urlFeedback {
 }
 
 .sidebar-scroll {
-  height: 100%;
+  flex: 1;
   overflow-y: auto;
   padding-right: 10px;
-  scroll-behavior: smooth;
 }
 
 /* Optional: Custom scrollbar styles */
@@ -504,17 +541,13 @@ body {
   overflow-x: hidden;
 }
 
-.app-container {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  min-height: 100vh;
-}
 .sidebar {
   width: 280px;
   min-height: 100vh;
   overflow: hidden;
   background: rgba(255, 255, 255, 0.05);
+  padding: 20px; /* <-- This adds space inside the sidebar */
+  box-sizing: border-box;
 }
 
 .sidebar-scroll {
@@ -537,6 +570,204 @@ body {
   .sidebar {
     width: 100%;
   }
+
+  .side button {
+    max-width: 100%;
+
+  }
 }
 
 
+/* Tutorial */
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(10, 10, 20, 0.85);
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: fadeIn 0.5s ease;
+}
+
+.overlay-box {
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 30px 40px;
+  border-radius: 12px;
+  text-align: center;
+  color: #aad8ff;
+  max-width: 400px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.3);
+}
+
+.overlay-buttons button {
+  margin: 10px;
+  padding: 10px 20px;
+  background: #aad8ff;
+  color: #1f1c2c;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.overlay-buttons button:hover {
+  background: #89c5ff;
+}
+
+
+/* Tutorial Popup */
+.tutorial-popup {
+  position: fixed;
+  z-index: 999;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tutorial-popup .tutorial-content {
+  background: #2c3e50;
+  color: #fff;
+  padding: 30px;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.tutorial-popup button {
+  margin: 10px;
+  padding: 10px 20px;
+  background: #aad8ff;
+  color: #1f1c2c;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+#tutorialOverlay {
+  position: fixed;
+  z-index: 998;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  pointer-events: none;
+}
+
+#highlightBox {
+  position: absolute;
+  border: 3px solid #aad8ff;
+  border-radius: 10px;
+  pointer-events: none;
+  transition: all 0.3s ease;
+}
+
+#tutorialStepBox {
+  position: absolute;
+  background: #2c3e50;
+  color: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 300px;
+  z-index: 1000;
+  pointer-events: auto;
+}
+
+
+/* === Tutorial Button Styling === */
+
+#tutorialStepBox button {
+  padding: 10px 20px;
+  background: rgba(173, 216, 255, 0.2);
+  border: 1px solid #aad8ff;
+  border-radius: 8px;
+  color: #aad8ff;
+  font-weight: bold;
+  font-size: 14px;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  transition: background 0.3s, color 0.3s;
+  box-shadow: 0 0 8px rgba(173, 216, 255, 0.4);
+}
+
+#tutorialStepBox button:hover {
+  background: #aad8ff;
+  color: #1f1c2c;
+}
+
+
+/* === Tutorial Box Layout Fix === */
+
+#tutorialStepBox {
+  display: flex;
+  flex-direction: column;
+  gap: 12px; /* Adds space between text and button */
+  background: rgba(255, 255, 255, 0.1);
+  padding: 14px 18px;
+  border-radius: 10px;
+  backdrop-filter: blur(8px);
+  max-width: 300px;
+  position: absolute;
+  z-index: 1000;
+  color: #fff;
+  font-size: 14px;
+}
+
+/* Align the button to the right */
+#tutorialStepBox .button-container {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+}
+
+/* Optional: Keep your nice button style */
+#tutorialStepBox button {
+  padding: 8px 16px;
+  background: rgba(173, 216, 255, 0.2);
+  border: 1px solid #aad8ff;
+  border-radius: 8px;
+  color: #aad8ff;
+  font-weight: bold;
+  font-size: 14px;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  transition: background 0.3s, color 0.3s;
+  box-shadow: 0 0 8px rgba(173, 216, 255, 0.4);
+}
+
+#tutorialStepBox button:hover {
+  background: #aad8ff;
+  color: #1f1c2c;
+}
+
+.brand-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 15px;
+  margin-bottom: 20px;
+}
+
+.brand-logo {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  border-radius: 6px;
+}
+
+.brand-title {
+  font-size: 22px;
+  font-weight: bold;
+  color: #aad8ff;
+  font-family: 'Segoe UI', sans-serif;
+  line-height: 1;
+  margin-top: 2px; /* adjust slightly if needed */
+}
+
+body:not(.light-mode) .brand-logo {
+  filter: brightness(1.2) contrast(1.2);
+}
