@@ -150,25 +150,26 @@ const quizData = [
     answer: "Grammatical errors and suspicious links"
   },
   {
-    question: "What should you do if a message asks for your password?",
+    question: "Which website is most likely fake?",
     options: [
-      "Reply immediately with your password",
-      "Verify the source before responding",
-      "Ignore all emails from your company",
-      "Click the link and change your password"
+      "https://secure-paypal.com.login.verify",
+      "https://paypal.com/settings",
+      "https://accounts.google.com",
+      "https://github.com/login"
     ],
-    answer: "Verify the source before responding"
+    answer: "https://secure-paypal.com.login.verify"
   },
   {
-    question: "What is a phishing attack?",
+    question: "What should you do before clicking on a suspicious link?",
     options: [
-      "A fishing technique used in rivers",
-      "A way to steal personal information via fake messages",
-      "A password recovery method",
-      "An antivirus scanning process"
+      "Check the URL carefully",
+      "Click quickly before it disappears",
+      "Open it in incognito mode",
+      "Forward to a friend"
     ],
-    answer: "A way to steal personal information via fake messages"
-  }
+    answer: "Check the URL carefully"
+  },
+  // Add more as needed...
 ];
 
 let currentQuestion = 0;
@@ -178,7 +179,27 @@ function startQuiz() {
   loadQuestion();
 }
 
+let quizTimer;
+let timeLimit = 10; // seconds
+
+function startTimer() {
+  let timeLeft = timeLimit;
+  const quizQuestion = document.getElementById("quizQuestion");
+  quizQuestion.innerText += ` (${timeLeft}s)`;
+
+  quizTimer = setInterval(() => {
+    timeLeft--;
+    if (timeLeft <= 0) {
+      clearInterval(quizTimer);
+      checkAnswer(null); // auto fail
+    } else {
+      quizQuestion.innerText = quizData[currentQuestion].question + ` (${timeLeft}s)`;
+    }
+  }, 1000);
+}
+
 function loadQuestion() {
+  clearInterval(quizTimer); // Clear any previous
   const question = quizData[currentQuestion];
   const quizQuestion = document.getElementById("quizQuestion");
   const quizOptions = document.getElementById("quizOptions");
@@ -189,9 +210,14 @@ function loadQuestion() {
   question.options.forEach((option) => {
     const btn = document.createElement("button");
     btn.innerText = option;
-    btn.onclick = () => checkAnswer(option);
+    btn.onclick = () => {
+      clearInterval(quizTimer);
+      checkAnswer(option);
+    };
     quizOptions.appendChild(btn);
   });
+
+  startTimer();
 }
 
 function checkAnswer(selected) {
@@ -201,8 +227,10 @@ function checkAnswer(selected) {
 
   if (selected === correct) {
     quizQuestion.innerText = "✅ Correct!";
+  } else if (selected === null) {
+    quizQuestion.innerText = `⏰ Time's up! Correct answer: ${correct}`;
   } else {
-    quizQuestion.innerText = `❌ Incorrect. The correct answer is: ${correct}`;
+    quizQuestion.innerText = `❌ Incorrect. Correct answer: ${correct}`;
   }
 
   setTimeout(() => {
